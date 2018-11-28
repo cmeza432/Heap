@@ -2,9 +2,9 @@ CC=       	gcc
 CFLAGS= 	-g -gdwarf-2 -std=gnu99 -Wall
 LDFLAGS=
 LIBRARIES=      lib/libmalloc-ff.so \
-		lib/libmalloc-nf.so \
-		lib/libmalloc-bf.so \
-		lib/libmalloc-wf.so
+			lib/libmalloc-nf.so \
+			lib/libmalloc-bf.so \
+			lib/libmalloc-wf.so
 
 TESTS=		tests/test1 \
                 tests/test2 \
