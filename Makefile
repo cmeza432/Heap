@@ -1,15 +1,15 @@
 CC=       	gcc
 CFLAGS= 	-g -gdwarf-2 -std=gnu99 -Wall
 LDFLAGS=
-LIBRARIES=      lib/libmalloc-ff.so \
+LIBRARIES=      lib/libmalloc-ff.so 
 			lib/libmalloc-nf.so \
 			lib/libmalloc-bf.so \
-			lib/libmalloc-wf.so
+			lib/libmalloc-wf.so \
 
-TESTS=		tests/test1 \
+TESTS=		tests/test1 
                 tests/test2 \
                 tests/test3 \
-                tests/test4 
+                tests/test4 \ 
 
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
