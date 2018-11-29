@@ -82,7 +82,7 @@ struct block *findFreeBlock(struct block **last, size_t size)
    while (curr && !(curr->free && curr->size >= size)) 
    {
       *last = curr;
-      curr  = curr->next;
+      curr  = curr->next;    
    }
 #endif
 
@@ -145,7 +145,18 @@ struct block *growHeap(struct block *last, size_t size)
    curr->free = false;
    return curr;
 }
-
+/* 
+ *
+ * Function to split free block
+ * 
+ * */
+void split(block *b, size_t size) 
+{
+   block *last, *next;
+   last = (block *) (((char *) b) + s + sizeof(block));
+   last->size = b->size - size - sizeof(block);
+   // work in progress
+}
 /*
  * \brief malloc
  *
@@ -181,7 +192,9 @@ void *malloc(size_t size)
    struct block *next = findFreeBlock(&last, size);
 
    /* TODO: Split free block if possible */
-
+   
+   //split(next,size);
+   
    /* Could not find free block, so grow heap */
    if (next == NULL) 
    {
