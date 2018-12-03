@@ -254,9 +254,15 @@ void *malloc(size_t size)
    struct block *next = findFreeBlock(&last, size);
 
    /* TODO: Split free block if possible */
-   
+   //size_t extra = next->size - size;
+/*if (next->size > size)
+   {
+    //  next->size = size;
+      num_splits += 1;
+      //next->next->size += extra;
+   }
    //split(next,size);
-   
+   */
    /* Could not find free block, so grow heap */
    if (next == NULL) 
    {
@@ -303,8 +309,19 @@ void free(void *ptr)
    
    /* Count frees */
    num_frees += 1;
-   /* TODO: Coalesce free blocks if needed */
 
+   /* TODO: Coalesce free blocks if needed */
+ 
+  struct block *succ = FreeList;
+   if (curr->next != NULL) 
+      succ = curr->next;
+   if (curr->free && succ->free && succ != NULL)
+   {
+      curr->size += succ->size;
+      succ = succ->next;
+      curr->next = succ;
+      num_coalesces += 1;  
+   }
 }
 
 /* vim: set expandtab sts=3 sw=3 ts=6 ft=cpp: --------------------------------*/
