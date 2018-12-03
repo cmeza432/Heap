@@ -95,7 +95,14 @@ struct block *findFreeBlock(struct block **last, size_t size)
 #endif
 
 #if defined NEXT && NEXT == 0
-   printf("TODO: Implement next fit here\n");
+   /* Next fit */
+   while (curr && !(curr->free && curr->size >= size))
+   {
+      *last = curr;
+      FreeList = curr;
+      curr = curr->next;
+   }
+
 #endif
 
    return curr;
@@ -118,7 +125,7 @@ struct block *growHeap(struct block *last, size_t size)
    /* Request more space from OS */
    struct block *curr = (struct block *)sbrk(0);
    struct block *prev = (struct block *)sbrk(sizeof(struct block) + size);
-
+   
    assert(curr == prev);
 
    /* OS allocation failed */
@@ -143,6 +150,8 @@ struct block *growHeap(struct block *last, size_t size)
    curr->size = size;
    curr->next = NULL;
    curr->free = false;
+
+   num_grows += 1;
    return curr;
 }
 /* 
@@ -150,13 +159,13 @@ struct block *growHeap(struct block *last, size_t size)
  * Function to split free block
  * 
  * */
-void split(block *b, size_t size) 
+/*void split(block *b, size_t size) 
 {
    block *last, *next;
    last = (block *) (((char *) b) + s + sizeof(block));
    last->size = b->size - size - sizeof(block);
    // work in progress
-}
+}*/
 /*
  * \brief malloc
  *
@@ -171,7 +180,8 @@ void split(block *b, size_t size)
  */
 void *malloc(size_t size) 
 {
-
+   /* Count total memory requested */
+   num_requested += size;
    if( atexit_registered == 0 )
    {
       atexit_registered = 1;
@@ -198,6 +208,7 @@ void *malloc(size_t size)
    /* Could not find free block, so grow heap */
    if (next == NULL) 
    {
+      max_heap += size;
       next = growHeap(last, size);
    }
 
@@ -209,6 +220,9 @@ void *malloc(size_t size)
    
    /* Mark block as in use */
    next->free = false;
+   
+   /* Count mallocs */
+   num_mallocs += 1;
 
    /* Return data address associated with block */
    return BLOCK_DATA(next);
@@ -235,8 +249,12 @@ void free(void *ptr)
    struct block *curr = BLOCK_HEADER(ptr);
    assert(curr->free == 0);
    curr->free = true;
-
+   
+   /* Count frees */
+   num_frees += 1;
+   
    /* TODO: Coalesce free blocks if needed */
+
 }
 
 /* vim: set expandtab sts=3 sw=3 ts=6 ft=cpp: --------------------------------*/
