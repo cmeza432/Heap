@@ -87,11 +87,20 @@ struct block *findFreeBlock(struct block **last, size_t size)
 #endif
 
 #if defined BEST && BEST == 0
-   printf("TODO: Implement best fit here\n");
+   // Best fit
 #endif
 
 #if defined WORST && WORST == 0
-   printf("TODO: Implement worst fit here\n");
+   // Worst fit
+   size_t max;
+   while(curr && !(curr->free && curr->size >= size))
+   {
+      if(max == NULL || curr->size > max)
+      {
+         *last = curr;
+      }
+      curr = curr->next;
+   }
 #endif
 
 #if defined NEXT && NEXT == 0
@@ -159,6 +168,7 @@ struct block *growHeap(struct block *last, size_t size)
  * Function to split free block
  * 
  * */
+
 /*void split(block *b, size_t size) 
 {
    block *last, *next;
@@ -166,6 +176,7 @@ struct block *growHeap(struct block *last, size_t size)
    last->size = b->size - size - sizeof(block);
    // work in progress
 }*/
+
 /*
  * \brief malloc
  *
