@@ -88,6 +88,12 @@ struct block *findFreeBlock(struct block **last, size_t size)
 
 #if defined BEST && BEST == 0
    // Best fit
+   size_t min;
+   while(curr && !(curr->free && curr->size >= size))
+   {
+      size_t check = curr->size;
+      if(min == NULL || check )
+   }
 #endif
 
 #if defined WORST && WORST == 0
@@ -97,6 +103,7 @@ struct block *findFreeBlock(struct block **last, size_t size)
    {
       if(max == NULL || curr->size > max)
       {
+         max = curr->size;
          *last = curr;
       }
       curr = curr->next;
