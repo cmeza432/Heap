@@ -76,32 +76,53 @@ struct block *FreeList = NULL; /* Free list to track the blocks available */
 struct block *findFreeBlock(struct block **last, size_t size) 
 {
    struct block *curr = FreeList;
-
+   
 #if defined FIT && FIT == 0
    /* First fit */
    while (curr && !(curr->free && curr->size >= size)) 
    {
       *last = curr;
       curr  = curr->next;    
+      
    }
 #endif
 
 #if defined BEST && BEST == 0
-   // Best fit
-   size_t min;
-   while(curr && !(curr->free && curr->size >= size))
+   /* Best Fit */
+   size_t best=0;
+   while (curr)
    {
-      size_t check = curr->size;
-      if(min == NULL || check )
+      if ( curr->free && curr->size >= size)
+      {
+         if (best == 0 || curr->size < best) 
+         {
+            best = curr->size;
+
+         }
+      }
+      *last = curr;
+      curr = curr->next;
+   
+      }
+    struct block *temp = FreeList;
+   while(temp)
+   {
+      if (temp->size == best) 
+      {
+         curr = temp; 
+         break;
+      }
+      temp = temp->next;
    }
+
+
 #endif
 
 #if defined WORST && WORST == 0
-   // Worst fit
    size_t max;
    while(curr && !(curr->free && curr->size >= size))
    {
-      if(max == NULL || curr->size > max)
+      if(max == 0 || curr->size > max)
       {
          max = curr->size;
          *last = curr;
@@ -175,7 +196,6 @@ struct block *growHeap(struct block *last, size_t size)
  * Function to split free block
  * 
  * */
-
 /*void split(block *b, size_t size) 
 {
    block *last, *next;
@@ -183,7 +203,6 @@ struct block *growHeap(struct block *last, size_t size)
    last->size = b->size - size - sizeof(block);
    // work in progress
 }*/
-
 /*
  * \brief malloc
  *
@@ -226,7 +245,6 @@ void *malloc(size_t size)
    /* Could not find free block, so grow heap */
    if (next == NULL) 
    {
-      max_heap += size;
       next = growHeap(last, size);
    }
 
@@ -270,7 +288,6 @@ void free(void *ptr)
    
    /* Count frees */
    num_frees += 1;
-   
    /* TODO: Coalesce free blocks if needed */
 
 }
