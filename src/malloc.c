@@ -202,22 +202,11 @@ struct block *growHeap(struct block *last, size_t size)
    curr->size = size;
    curr->next = NULL;
    curr->free = false;
-
+   max_heap += size;
+   num_blocks += 1;
    num_grows += 1;
    return curr;
 }
-/* 
- *
- * Function to split free block
- * 
- * */
-/*void split(block *b, size_t size) 
-{
-   block *last, *next;
-   last = (block *) (((char *) b) + s + sizeof(block));
-   last->size = b->size - size - sizeof(block);
-   // work in progress
-}*/
 /*
  * \brief malloc
  *
@@ -252,29 +241,34 @@ void *malloc(size_t size)
    /* Look for free block */
    struct block *last = FreeList;
    struct block *next = findFreeBlock(&last, size);
-
    /* TODO: Split free block if possible */
-   //size_t extra = next->size - size;
-/*if (next->size > size)
+/*
+   size_t extra;
+   struct block *temp;
+   if (next != NULL && next->size > size)
    {
-    //  next->size = size;
+      extra = next->size - size;
+      next->size = size;
+      temp = (struct block *) (((char*) next) + size);
+      temp->size = extra;
+      temp->free = true;
+      temp->next = next->next;
+      next->next = temp;
       num_splits += 1;
-      //next->next->size += extra;
    }
-   //split(next,size);
-   */
+*/
    /* Could not find free block, so grow heap */
    if (next == NULL) 
    {
       next = growHeap(last, size);
    }
+   else num_reuses += 1;
 
    /* Could not find free block or grow heap, so just return NULL */
    if (next == NULL) 
    {
       return NULL;
    }
-   
    /* Mark block as in use */
    next->free = false;
    
@@ -311,8 +305,8 @@ void free(void *ptr)
    num_frees += 1;
 
    /* TODO: Coalesce free blocks if needed */
- 
-  struct block *succ = FreeList;
+ /*
+   struct block *succ;
    if (curr->next != NULL) 
       succ = curr->next;
    if (curr->free && succ->free && succ != NULL)
@@ -321,7 +315,7 @@ void free(void *ptr)
       succ = succ->next;
       curr->next = succ;
       num_coalesces += 1;  
-   }
+   }*/
 }
 
 /* vim: set expandtab sts=3 sw=3 ts=6 ft=cpp: --------------------------------*/
